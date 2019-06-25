@@ -25,3 +25,6 @@ class TestActivity(unittest.TestCase):
         act = pymu.Activity('./tests/activity.csv', lazy=False)
 
         self.assertIsInstance(act.dataframe, pd.DataFrame)
+
+    def test_activity_created_ground_coords(self):
+        pass
