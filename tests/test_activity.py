@@ -44,6 +44,13 @@ class TestActivity(unittest.TestCase):
 
         self.assertIsInstance(act.dataframe, pd.DataFrame)
 
+    def test_acquire_dataset(self):
+        act = pymu.Activity(self.base_activity)
+        self.assertIsNone(act.dataframe)
+
+        act.acquire()
+        self.assertIsInstance(act.dataframe, pd.DataFrame)
+
     def test_activity_created_ground_coords(self):
         act = pymu.Activity(self.base_activity,
                             ground_coordinates=[10, 20, 40, 50])
@@ -147,3 +154,11 @@ class TestActivity(unittest.TestCase):
         act.primitive_deviations = None
 
         self.assertIsNone(act.primitive_deviations)
+
+    def test_pointwise_labels(self):
+        act = pymu.Activity(self.base_activity, lazy=False)
+
+        labels = [1] * 7972
+        act.pointwise_labels = labels
+
+        self.assertListEqual([1] * 7972, act.pointwise_labels)

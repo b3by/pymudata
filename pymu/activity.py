@@ -115,7 +115,12 @@ class Activity:
             self.__pointwise_labels = pointwise_labels
         elif pointwise_labels:
             if self._dataframe.shape[0] != len(pointwise_labels):
-                raise Exception('Count mismatch between points and labels')
+                msg = ('Count mismatch between points and labels '
+                       '({} data points, {} labels passed)')
+                raise Exception(msg.format(self._dataframe.shape[0],
+                                           len(pointwise_labels)))
+            else:
+                self.__pointwise_labels = pointwise_labels
 
     def clear_annotations(self):
         self.__ground_coordinates = None
