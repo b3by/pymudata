@@ -121,11 +121,20 @@ class Activity:
                                            len(pointwise_labels)))
             else:
                 self.__pointwise_labels = pointwise_labels
+        else:
+            self.__pointwise_labels = None
 
     def clear_annotations(self):
+        """Clear coordinates, pairs, deviations and labels
+
+        This method can be used to wipe out all the annotations related to the
+        series in the activity. It will reset ground coordinates, coordinate
+        pairs, primitive deviations and pointwise labels.
+        """
         self.__ground_coordinates = None
         self.__ground_pairs = None
         self.__primitive_deviations = None
+        self.__pointwise_labels = None
 
     def acquire(self):
         """Read in the data file
@@ -140,3 +149,32 @@ class Activity:
             print(f'Data file already acquired for {self.file_path}')
         else:
             self._dataframe = pd.read_csv(self.file_path)
+
+    def stream(self, window: int, stride: int):
+        """Get a generator of sliding windows over the activity
+
+        This method returns a generator of sliding windows for the activity,
+        given a window size and a stride value (whatever is left from the
+        overlap).
+
+        Parameters
+        ----------
+        window : int
+            The size of the window to use during the slicing operation
+        stride : int
+            The value of stride betweeb consecutive windows
+
+        """
+        if self.dataframe is None:
+            raise Exception('Dataframe not loaded. Please run acquire()')
+
+        c_win = 0
+
+        while c_win + window <= self.dataframe.shape[0]:
+            if self.pointwise_labels is not None:
+                lbs = self.__pointwise_labels[c_win:c_win + window]
+            else:
+                lbs = None
+
+            yield self.dataframe.iloc[c_win:c_win + window], lbs
+            c_win += stride

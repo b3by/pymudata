@@ -133,7 +133,9 @@ class TestActivity(unittest.TestCase):
     def test_clear_annotations(self):
         act = pymu.Activity(self.base_activity,
                             ground_coordinates=[10, 20, 40, 50],
-                            primitive_deviations=[1, 2])
+                            primitive_deviations=[1, 2],
+                            pointwise_labels=[1] * 7972)
+
         act.clear_annotations()
 
         self.assertIsNone(act.ground_coordinates)
@@ -157,8 +159,46 @@ class TestActivity(unittest.TestCase):
 
     def test_pointwise_labels(self):
         act = pymu.Activity(self.base_activity, lazy=False)
-
         labels = [1] * 7972
         act.pointwise_labels = labels
 
         self.assertListEqual([1] * 7972, act.pointwise_labels)
+
+    def test_pointwise_labels_mismatch(self):
+        act = pymu.Activity(self.base_activity, lazy=False)
+        labels = [1] * 555
+
+        with self.assertRaises(Exception) as ex:
+            act.pointwise_labels = labels
+
+        self.assertIn('Count mismatch between points and labels',
+                      str(ex.exception))
+
+    def test_stream_unloaded_dataframe(self):
+        act = pymu.Activity(self.base_activity)
+        stream = act.stream(10, 1)
+
+        with self.assertRaises(Exception) as ex:
+            next(stream)
+
+        self.assertIn('Dataframe not loaded.', str(ex.exception))
+
+    def test_stream_loaded_dataframe(self):
+        act = pymu.Activity(self.base_activity, lazy=False)
+
+        stream = act.stream(10, 1)
+
+        for win, lbs in stream:
+            self.assertEqual(10, win.shape[0])
+            self.assertEqual(7, win.shape[1])
+            self.assertIsNone(lbs)
+
+    def test_stream_dataframe_with_labels(self):
+        act = pymu.Activity(self.base_activity,
+                            pointwise_labels=[1] * 7972,
+                            lazy=False)
+
+        stream = act.stream(30, 5)
+
+        for _, lbs in stream:
+            self.assertListEqual([1] * 30, lbs)
