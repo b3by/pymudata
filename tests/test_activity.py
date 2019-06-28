@@ -202,3 +202,16 @@ class TestActivity(unittest.TestCase):
 
         for _, lbs in stream:
             self.assertListEqual([1] * 30, lbs)
+
+    def test_stream_single_points(self):
+        act = pymu.Activity(self.base_activity,
+                            pointwise_labels=[1] * 7972,
+                            lazy=False)
+
+        stream = act.stream(1, 1)
+
+        for p, l in stream:
+            self.assertEqual(1, p.shape[0])
+            self.assertListEqual([1], l)
+
+        self.assertEqual(7972, len(list(act.stream(1, 1))))
