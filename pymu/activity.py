@@ -34,7 +34,7 @@ class Activity:
     """
 
     def __init__(self, file_path: str,
-                 name: str = None,
+                 exercise_name: str = None,
                  subject: int = None,
                  ground_coordinates: list = None,
                  primitive_deviations: list = None,
@@ -46,7 +46,7 @@ class Activity:
 
         self._file_path = file_path
         self._dataframe = None
-        self.name = name
+        self.exercise_name = exercise_name
         self.subject = subject
 
         if not lazy:

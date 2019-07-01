@@ -1,8 +1,23 @@
 import unittest
+import sys
+
+from io import StringIO
+from contextlib import contextmanager
 
 import pandas as pd
 
 import pymu
+
+
+@contextmanager
+def capture(command, *args, **kwargs):
+    out, sys.stdout = sys.stdout, StringIO()
+    try:
+        command(*args, **kwargs)
+        sys.stdout.seek(0)
+        yield sys.stdout.read()
+    finally:
+        sys.stdout = out
 
 
 class TestActivity(unittest.TestCase):
@@ -18,7 +33,7 @@ class TestActivity(unittest.TestCase):
         self.assertIsNone(act.ground_coordinates)
         self.assertIsNone(act.ground_pairs)
         self.assertIsNone(act.primitive_deviations)
-        self.assertIsNone(act.name)
+        self.assertIsNone(act.exercise_name)
         self.assertIsNone(act.subject)
         self.assertIsNone(act.pointwise_labels)
 
@@ -30,9 +45,9 @@ class TestActivity(unittest.TestCase):
             pymu.Activity('./nonexisting_file.csv')
 
     def test_activity_with_name(self):
-        act = pymu.Activity(self.base_activity, name='exercise')
+        act = pymu.Activity(self.base_activity, exercise_name='exercise')
 
-        self.assertEqual('exercise', act.name)
+        self.assertEqual('exercise', act.exercise_name)
 
     def test_activity_with_subject(self):
         act = pymu.Activity(self.base_activity, subject=10)
@@ -50,6 +65,14 @@ class TestActivity(unittest.TestCase):
 
         act.acquire()
         self.assertIsInstance(act.dataframe, pd.DataFrame)
+
+    def test_double_acquire(self):
+        act = pymu.Activity(self.base_activity)
+        act.acquire()
+
+        with capture(act.acquire) as output:
+            msg = 'Data file already acquired for ./tests/activity.csv\n'
+            self.assertEqual(msg, output)
 
     def test_activity_created_ground_coords(self):
         act = pymu.Activity(self.base_activity,
