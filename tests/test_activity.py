@@ -90,7 +90,7 @@ class TestActivity(unittest.TestCase):
         with self.assertRaises(Exception) as ex:
             pymu.Activity(self.base_activity, ground_coordinates=[10])
 
-        self.assertIn('Coordinates are passed in odd number.',
+        self.assertIn('Odd coordinates on ./tests/activity.csv',
                       str(ex.exception))
 
     def test_assign_coordinates(self):
@@ -103,7 +103,7 @@ class TestActivity(unittest.TestCase):
         with self.assertRaises(Exception) as ex:
             act.ground_coordinates = [1, 2, 3]
 
-        self.assertIn('Coordinates are passed in odd number.',
+        self.assertIn('Odd coordinates on ./tests/activity.csv',
                       str(ex.exception))
 
     def test_ground_pairs(self):

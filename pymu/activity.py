@@ -86,7 +86,7 @@ class Activity:
             prs = list(zip(ground_coordinates[::2], ground_coordinates[1::2]))
 
             if len(ground_coordinates) % 2 != 0:
-                raise Exception('Coordinates are passed in odd number.')
+                raise Exception(f'Odd coordinates on {self.file_path}')
 
             if hasattr(self, '_Activity__primitive_deviations') and \
                self.primitive_deviations and \
