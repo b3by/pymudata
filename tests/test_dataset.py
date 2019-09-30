@@ -14,10 +14,6 @@ class TestActivity(unittest.TestCase):
         self.assertEqual(self.base_dataset, ds.data_location)
         self.assertListEqual(['emptyone', 'flexstand', 'hs'], ds.exercises)
 
-    def test_dataset_created_synthed(self):
-        ds = pymu.Dataset(self.base_dataset, synth=True)
-        self.assertListEqual(['flexstand', 'hs'], ds.exercises)
-
     def test_synth_dataset(self):
         ds = pymu.Dataset(self.base_dataset)
         ds.synth()
