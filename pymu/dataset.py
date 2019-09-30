@@ -34,11 +34,14 @@ class Dataset:
 
     """
 
-    def __init__(self, data_location: str):
+    def __init__(self, data_location: str, synth=False):
         self.__data_location = data_location
         self.__exercises = [x for x in Path(self.__data_location).glob('*/')
                             if x.is_dir()]
         self.__masked = None
+
+        if synth:
+            self.synth()
 
     @property
     def data_location(self):

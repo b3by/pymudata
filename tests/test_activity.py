@@ -212,6 +212,7 @@ class TestActivity(unittest.TestCase):
         stream = act.stream(10, 1)
 
         for win, lbs in stream:
+            self.assertIsInstance(win, pd.DataFrame)
             self.assertEqual(10, win.shape[0])
             self.assertEqual(7, win.shape[1])
             self.assertIsNone(lbs)
